@@ -81,73 +81,20 @@
 #[cfg(test)] extern crate test;
 #[cfg(test)] extern crate native;
 
-// Initial glob-exports mean that all the contents of all the modules
-// wind up exported, if you're interested in writing platform-specific code.
-
-pub use types::common::c95::*;
-pub use types::common::c99::*;
-pub use types::common::posix88::*;
-pub use types::common::posix01::*;
-pub use types::common::posix08::*;
-pub use types::common::bsd44::*;
-pub use types::os::common::posix01::*;
-pub use types::os::common::bsd44::*;
-pub use types::os::arch::c95::*;
-pub use types::os::arch::c99::*;
-pub use types::os::arch::posix88::*;
-pub use types::os::arch::posix01::*;
-pub use types::os::arch::posix08::*;
-pub use types::os::arch::bsd44::*;
-pub use types::os::arch::extra::*;
-
-pub use consts::os::c95::*;
-pub use consts::os::c99::*;
-pub use consts::os::posix88::*;
-pub use consts::os::posix01::*;
-pub use consts::os::posix08::*;
-pub use consts::os::bsd44::*;
-pub use consts::os::extra::*;
-pub use consts::os::sysconf::*;
-
-pub use funcs::c95::ctype::*;
-pub use funcs::c95::stdio::*;
-pub use funcs::c95::stdlib::*;
-pub use funcs::c95::string::*;
-
-pub use funcs::posix88::stat_::*;
-pub use funcs::posix88::stdio::*;
-pub use funcs::posix88::fcntl::*;
-pub use funcs::posix88::dirent::*;
-pub use funcs::posix88::unistd::*;
-pub use funcs::posix88::mman::*;
-
-pub use funcs::posix01::stat_::*;
-pub use funcs::posix01::unistd::*;
-pub use funcs::posix01::glob::*;
-pub use funcs::posix01::mman::*;
-pub use funcs::posix08::unistd::*;
-
-pub use funcs::bsd43::*;
-pub use funcs::bsd44::*;
-pub use funcs::extra::*;
-
-#[cfg(target_os = "win32")]
-pub use funcs::extra::kernel32::*;
-#[cfg(target_os = "win32")]
-pub use funcs::extra::msvcrt::*;
-
 // Explicit export lists for the intersection (provided here) mean that
 // you can write more-platform-agnostic code if you stick to just these
 // symbols.
 
 pub use types::common::c95::{FILE, c_void, fpos_t};
+pub use types::common::c99::{int8_t, int16_t, int32_t, int64_t};
+pub use types::common::c99::{uint8_t, uint16_t, uint32_t, uint64_t};
 pub use types::common::posix88::{DIR, dirent_t};
-pub use types::os::arch::c95::{c_char, c_double, c_float, c_int};
+pub use types::os::arch::c95::{c_char, c_double, c_float, c_int, c_uint};
 pub use types::os::arch::c95::{c_long, c_short, c_uchar, c_ulong};
 pub use types::os::arch::c95::{c_ushort, clock_t, ptrdiff_t};
 pub use types::os::arch::c95::{size_t, time_t};
-pub use types::os::arch::c99::{c_longlong, c_ulonglong, intptr_t};
-pub use types::os::arch::c99::{uintptr_t};
+pub use types::os::arch::c99::{c_longlong, c_ulonglong};
+pub use types::os::arch::c99::{intptr_t, uintptr_t};
 pub use types::os::arch::posix88::{dev_t, dirent_t, ino_t, mode_t};
 pub use types::os::arch::posix88::{off_t, pid_t, ssize_t};
 
@@ -171,7 +118,7 @@ pub use funcs::c95::ctype::{isupper, isxdigit, tolower, toupper};
 pub use funcs::c95::stdio::{fclose, feof, ferror, fflush, fgetc};
 pub use funcs::c95::stdio::{fgetpos, fgets, fopen, fputc, fputs};
 pub use funcs::c95::stdio::{fread, freopen, fseek, fsetpos, ftell};
-pub use funcs::c95::stdio::{fwrite, perror, puts, remove, rewind};
+pub use funcs::c95::stdio::{fwrite, perror, puts, remove, rename, rewind};
 pub use funcs::c95::stdio::{setbuf, setvbuf, tmpfile, ungetc};
 
 pub use funcs::c95::stdlib::{abs, atof, atoi, calloc, exit, _exit};
@@ -193,6 +140,56 @@ pub use funcs::posix88::unistd::{access, chdir, close, dup, dup2};
 pub use funcs::posix88::unistd::{execv, execve, execvp, getcwd};
 pub use funcs::posix88::unistd::{getpid, isatty, lseek, pipe, read};
 pub use funcs::posix88::unistd::{rmdir, unlink, write};
+
+// But we also reexport most everything
+// if you're interested in writing platform-specific code.
+
+#[cfg(unix)] pub use consts::os::sysconf::{_SC_PAGESIZE};
+#[cfg(unix)] pub use consts::os::posix88::{PROT_READ, PROT_WRITE, PROT_EXEC};
+#[cfg(unix)] pub use consts::os::posix88::{MAP_FIXED, MAP_FILE, MAP_ANON, MAP_PRIVATE, MAP_FAILED};
+#[cfg(unix)] pub use consts::os::posix88::{EACCES, EBADF, EINVAL, ENODEV, ENOMEM};
+#[cfg(unix)] pub use consts::os::posix88::{ECONNREFUSED, ECONNRESET, EPERM, EPIPE};
+#[cfg(unix)] pub use consts::os::posix88::{ENOTCONN, ECONNABORTED, EADDRNOTAVAIL, EINTR};
+#[cfg(unix)] pub use consts::os::posix88::{EADDRINUSE, ENOENT, EISDIR, EAGAIN, EWOULDBLOCK};
+#[cfg(unix)] pub use consts::os::posix88::{ECANCELED};
+#[cfg(unix)] pub use consts::os::posix88::{SIGTERM, SIGKILL, SIGPIPE, PROT_NONE};
+#[cfg(unix)] pub use consts::os::posix01::{SIG_IGN, WNOHANG};
+#[cfg(unix)] pub use consts::os::bsd44::{AF_INET, AF_INET6, AF_UNIX, SOCK_STREAM, SOCK_DGRAM};
+#[cfg(unix)] pub use consts::os::bsd44::{IPPROTO_IP, IPPROTO_IPV6, IPPROTO_TCP, TCP_NODELAY};
+#[cfg(unix)] pub use consts::os::bsd44::{SOL_SOCKET, SO_KEEPALIVE};
+#[cfg(unix)] pub use consts::os::bsd44::{SO_REUSEADDR, SO_BROADCAST, SHUT_WR, IP_MULTICAST_LOOP};
+#[cfg(unix)] pub use consts::os::bsd44::{IP_ADD_MEMBERSHIP, IP_DROP_MEMBERSHIP};
+#[cfg(unix)] pub use consts::os::bsd44::{IPV6_ADD_MEMBERSHIP, IPV6_DROP_MEMBERSHIP};
+#[cfg(unix)] pub use consts::os::bsd44::{IP_MULTICAST_TTL, IP_TTL};
+
+#[cfg(unix)] pub use types::os::common::posix01::{pthread_t, timespec};
+#[cfg(unix)] pub use types::os::common::bsd44::{addrinfo, in_addr, in6_addr, sockaddr_storage};
+#[cfg(unix)] pub use types::os::common::bsd44::{ip_mreq, ip6_mreq, sockaddr, sockaddr_un};
+#[cfg(unix)] pub use types::os::common::bsd44::{sa_family_t, sockaddr_in, sockaddr_in6, socklen_t};
+#[cfg(unix)] pub use types::os::arch::posix88::{uid_t, gid_t};
+#[cfg(unix)] pub use types::os::arch::posix01::{pthread_attr_t, utimbuf, stat};
+
+#[cfg(unix)] pub use funcs::posix88::unistd::{sysconf, setgid, setsid, setuid, pread, pwrite};
+#[cfg(unix)] pub use funcs::posix88::unistd::{_PC_NAME_MAX, utime, nanosleep, pathconf, link};
+#[cfg(unix)] pub use funcs::posix88::unistd::{chown};
+#[cfg(unix)] pub use funcs::posix88::mman::{mmap, munmap, mprotect};
+#[cfg(unix)] pub use funcs::posix88::dirent::{opendir, readdir_r, closedir};
+#[cfg(unix)] pub use funcs::posix88::stat_::{fstat, stat};
+#[cfg(unix)] pub use funcs::posix88::fcntl::{fcntl};
+#[cfg(unix)] pub use funcs::posix01::stat_::{lstat};
+#[cfg(unix)] pub use funcs::posix01::unistd::{fsync, ftruncate};
+#[cfg(unix)] pub use funcs::posix01::unistd::{readlink, symlink};
+#[cfg(unix)] pub use funcs::bsd43::{socket, setsockopt, bind, send, recv, recvfrom};
+#[cfg(unix)] pub use funcs::bsd43::{listen, sendto, accept, connect, getpeername, getsockname};
+#[cfg(unix)] pub use funcs::bsd43::{shutdown};
+
+#[cfg(target_os = "linux")] #[cfg(target_os = "android")]
+pub use consts::os::posix01::{CLOCK_REALTIME, CLOCK_MONOTONIC};
+#[cfg(target_os = "linux")] #[cfg(target_os = "android")]
+pub use funcs::posix01::unistd::{fdatasync};
+
+#[cfg(unix, not(target_os = "freebsd"))]
+pub use consts::os::extra::{MAP_STACK};
 
 #[cfg(not(windows))]
 #[link(name = "c")]
